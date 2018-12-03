@@ -22,7 +22,7 @@ delta_a=np.zeros(num)
 for i in range(num):
     y[i]=(1-x[i])*x[i]*k3/(k3m+2*k3*x[i])
     z[i] = (1-x[i]-2*y[i])
-    k1m[i] = -(k2*z[i]*z[i]*(x[i]-z[i])-k3*z[i]*(1+x[i]-2*y[i])+k3m*(3*y[i]+x[i]-1))/(1-2*y[i])
+    k1m[i] = (k2*z[i]*z[i]*(x[i]-z[i])-k3*z[i]*(1+x[i]-2*y[i])+k3m*(3*y[i]+x[i]-1))/(1-2*y[i])
     k1[i]= (k1m[i]*x[i]+k3*x[i]*z[i]-k3m*y[i]+k2*x[i]*z[i]*z[i])/z[i]
     a11 = -k1[i]-k1m[i]-k2*z[i]*z[i]+2*k2*x[i]*z[i]-k3*(1-2*y[i]-2*x[i])
     a12 = -2*k1[i]+2*k3*x[i]+k3m+4*k2*x[i]*z[i]
@@ -37,7 +37,8 @@ ax1.plot(k1, k1m, label='Линия нейтральности', color='r')
 for i in range(num):
     y[i]=(1-x[i])*x[i]*k3/(k3m+2*k3*x[i])
     z[i] = (1-x[i]-2*y[i])
-    K1m[i] = (k3m*k3m*y[i]+k3m*k3*z[i]*(2*y[i]-x[i])-k2*k3m*z[i]*z[i]*(z[i]-x[i]))/(4*k3*x[i]*z[i]+k3m*(x[i]+z[i]))
+    #K1m[i] = (k3m*k3m*y[i]+k3m*k3*z[i]*(2*y[i]-x[i])-k2*k3m*z[i]*z[i]*(z[i]-x[i]))/(4*k3*x[i]*z[i]+k3m*(x[i]+z[i]))
+    K1m[i] = (k3m*k3m*y[i]+k3m*k3*z[i]*(2*y[i]-x[i])-k2*k3m*z[i]*z[i]*(z[i]-x[i])-2*k3*k3*x[i]*z[i]*z[i])/(4*k3*x[i]*z[i]+k3m*(x[i]+z[i]))
     K1[i]= (K1m[i]*x[i]+k3*x[i]*z[i]-k3m*y[i]+k2*x[i]*z[i]*z[i])/z[i]
     a11 = -K1[i]-K1m[i]-k2*z[i]*z[i]+2*k2*x[i]*z[i]-k3*(1-2*y[i]-2*x[i])
     a12 = -2*K1[i]+2*k3*x[i]+k3m+4*k2*x[i]*z[i]
@@ -53,20 +54,20 @@ plt.legend()
 # однопараметрический анализ по параметру k1
 k2=0.95
 k3=0.0032
-k3m=0.002
+k3m=0.004
 #k1=0.12
 k1m=0.01 
 num=1000
 x=np.linspace(0, 0.999, num)
-yh=np.zeros(num)
-xh=np.zeros(num)
-k1h=np.zeros(num)
-ysn=np.zeros(num)
-xsn=np.zeros(num)
-k1sn=np.zeros(num)
-ydi=np.zeros(num)
-xdi=np.zeros(num)
-k1di=np.zeros(num)
+yh=[]
+xh=[]
+k1h=[]
+ysn=[]
+xsn=[]
+k1sn=[]
+ydi=[]
+xdi=[]
+k1di=[]
 j1 = 0
 j2 = 0
 j3 = 0
@@ -81,6 +82,7 @@ a22 = -2*k3*x[i]-k3m
 sp[i]= a11+a22
 delta_a[i]=a11*a22-a12*a21
 DI[i] = sp[i]*sp[i]-4*delta_a[i]
+fig2 = plt.figure()
 for i in range(2,num):
     y[i]=((1-x[i])*x[i]*k3)/(k3m+2*k3*x[i])
     z[i] = 1-x[i]-2*y[i]
@@ -93,37 +95,33 @@ for i in range(2,num):
     delta_a[i]=a11*a22-a12*a21
     DI[i] = sp[i]*sp[i]-4*delta_a[i]
     if (sp[i]*sp[i-1]<=0):
-        j1+=1
-        yh[j1]=y[i]
-        xh[j1]=x[i]
-        k1h[j1]=K1[i]
+        yh.append(y[i])
+        xh.append(x[i])
+        k1h.append(K1[i])
+        plt.plot(K1[i], x[i], 'go', label='hopf')
+        plt.plot(K1[i], y[i], 'go', label='hopf')
     if (delta_a[i]*delta_a[i-1]<=0):
-        j2+=1
-        ysn[j2]=y[i]
-        xsn[j2]=x[i]
-        k1sn[j2]=K1[i]
+        ysn.append(y[i])
+        xsn.append(x[i])
+        k1sn.append(K1[i])
+        plt.plot(K1[i], x[i], 'r*', label='saddle-node')
+        plt.plot(K1[i], y[i], 'r*', label='saddle-node')
     if (DI[i]*DI[i-1]<=0):
-        j3+=1
-        ydi[j3]=y[i]
-        xdi[j3]=x[i]
-        k1di[j3]=K1[i]
-mh=j1
-msn=j2
-mdi=j3
+        ydi.append(y[i])
+        xdi.append(x[i])
+        k1di.append(K1[i])
+        tst=plt.plot(K1[i], x[i], 'b^', label='node')
+        plt.plot(K1[i], y[i], 'b^', label='node')
+#mh=j1
+#msn=j2
+#mdi=j3
 
-fig2 = plt.figure()
+
 k1x_plot = fig2.add_subplot(111)
 k1x_plot.plot(K1, x)
 k1y_plot = fig2.add_subplot(111)
 k1y_plot.plot(K1, y)
-k1hxh_plot = fig2.add_subplot(111)
-k1hxh_plot.plot(k1h, xh, '*')
-k1hyh_plot = fig2.add_subplot(111)
-k1hyh_plot.plot(k1h, yh, '*')
-k1snxsn_plot = fig2.add_subplot(111)
-k1snxsn_plot.plot(k1sn, xsn, 's')
-k1snysn_plot = fig2.add_subplot(111)
-k1snysn_plot.plot(k1sn, ysn, 's')
-
+plt.title('Однопараметрический анализ k3m=0.004')
+plt.legend()
 
 plt.show()
