@@ -79,7 +79,8 @@ class Interface(QMainWindow, task_1_interface.Ui_MainWindow, QOpenGLWidget):
         global dt
         emit = Coordinate(float(self.c_x.toPlainText()), float(self.c_y.toPlainText()), float(self.c_z.toPlainText())) 
         vel = Velocity(float(self.v_x.toPlainText())/10000, float(self.v_y.toPlainText())/10000, float(self.v_z.toPlainText())/10000)
-        part_list.append(Particle(emit, vel, float(self.mass.toPlainText()), self._color.getRgbF(), dt*self.time.toPlainText()))     
+        part_list.append(Particle(emit, vel, float(self.mass.toPlainText()), self._color.getRgbF(), dt*int(self.time.toPlainText())))  
+        print(dt*int(self.time.toPlainText()))   
         self.gl_sys.update()
 
     def button_add_random(self):
@@ -279,6 +280,7 @@ class Interface(QMainWindow, task_1_interface.Ui_MainWindow, QOpenGLWidget):
                 coordinate = Coordinate(x_n1[i]/AEM, y_n1[i]/AEM, z_n1[i]/AEM)
                 velocity = Velocity(u_n1[i], v_n1[i], w_n1[i])
                 part_list.append(Particle(coordinate, velocity, m_n[i]/Earth_mass, col_n[i], t_n[i]))
+                
                     
         
         if (self.timer.isActive()):
@@ -304,7 +306,7 @@ class Interface(QMainWindow, task_1_interface.Ui_MainWindow, QOpenGLWidget):
     def draw(self):
         global part_list
         global dt
-        part_list = [p for p in part_list if p.alive != 0]
+        part_list = [p for p in part_list if int(p.alive) > 0]
         if self.count_combo.currentIndex() != 5: 
             for i in range(len(part_list)):
                 if (abs(part_list[i].x) < 2500)&(abs(part_list[i].y) < 2500)&(abs(part_list[i].z) < 2500):
