@@ -46,8 +46,14 @@ for i in range(num):
     a22 = -2*k3*x[i]-k3m
     sp[i]= a11+a22
     delta_a[i]=a11*a22-a12*a21
+    if (abs(K1m[i]-k1m[i])<1e-6):
+        ax1.plot(K1[i],K1m[i], 'r*', marker='o', label='точка бифуркации ко-размерности 2 Такенса-Богданова')
+for i in range(1,num-1):
+    if (K1m[i]>K1m[i-1]) and (K1m[i]>K1m[i+1]):
+        ax1.plot(K1[i],K1m[i], 'g*', marker='o',label='точка бифуркации коразмерности 2 «трехкратное равновесие»')
 ax1 = fig.add_subplot(111)
 ax1.plot(K1, K1m, label='Линия кратности', color='b')
+#ax1.plot(x, y, label='xy', color='b')
 plt.xlabel(u'K1')
 plt.ylabel(u'K1m')
 plt.legend()
@@ -112,10 +118,6 @@ for i in range(2,num):
         k1di.append(K1[i])
         tst=plt.plot(K1[i], x[i], 'b^', label='node')
         plt.plot(K1[i], y[i], 'b^', label='node')
-#mh=j1
-#msn=j2
-#mdi=j3
-
 
 k1x_plot = fig2.add_subplot(111)
 k1x_plot.plot(K1, x)
